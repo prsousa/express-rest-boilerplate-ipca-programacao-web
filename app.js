@@ -2,8 +2,17 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+var mongoose = require("mongoose");
 
 var carsRouter = require("./routes/cars");
+
+mongoose.connect("mongodb://localhost/carsDB", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+var db = mongoose.connection;
+db.on("error", (err) => console.error("Mongo connection error", err));
 
 var app = express();
 
