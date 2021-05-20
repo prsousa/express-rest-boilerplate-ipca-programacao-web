@@ -1,14 +1,17 @@
 const Car = require("../models/car");
 
-const list = (req, res, next) => {
-  const { search } = req.query;
-  const cars = Car.search(search);
+const list = async (req, res, next) => {
+  const { search = "" } = req.query;
+  const cars = await Car.find({ name: { $regex: search, $options: "i" } });
   res.json(cars);
 };
 
-const detail = (req, res, next) => {
+const detail = async (req, res, next) => {
   const { id } = req.params;
-  const car = Car.get(id);
+  let car = null;
+  try {
+    car = await Car.findById(id);
+  } catch (err) {}
 
   if (car) {
     res.json(car);
@@ -17,12 +20,13 @@ const detail = (req, res, next) => {
   }
 };
 
-const create = (req, res, next) => {
-  const { name, seats, color } = req.body;
-  const data = { name, seats, color };
-  const car = Car.insert(data);
-
-  res.status(201).json(car);
+const create = async (req, res, next) => {
+  try {
+    const car = await Car.create(req.body);
+    res.status(201).json(car);
+  } catch (err) {
+    res.status(400).json(err);
+  }
 };
 
 module.exports = { list, detail, create };

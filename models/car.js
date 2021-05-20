@@ -1,22 +1,18 @@
-const cars_db = {
-  1: { id: 1, name: "Audi", seats: 3, color: "red" },
-  2: { id: 2, name: "Toyota", seats: 5, color: "blue" },
-};
+const mongoose = require("mongoose");
 
-let autoIncrement = Object.keys(cars_db).length + 1;
+const schema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  seats: {
+    type: Number,
+    required: true,
+    min: [1, "Too few seats"],
+  },
+  color: {
+    type: String,
+  },
+});
 
-const insert = (car) => {
-  const id = autoIncrement++;
-  return (cars_db[id] = { ...car, id });
-};
-
-const get = (id) => cars_db[id];
-
-const remove = (id) => delete cars_db[id];
-
-const search = (query = "") =>
-  Object.values(cars_db).filter((car) =>
-    car.name.toLowerCase().includes(query.toLowerCase())
-  );
-
-module.exports = { insert, get, remove, search };
+module.exports = mongoose.model("Car", schema);
